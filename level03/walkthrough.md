@@ -56,7 +56,7 @@ Premièrement, on déclare un tableau contenant le résultat de la soustraction 
 array=(322424845-1, 322424845-2, 322424845-3, 322424845-4, 322424845-5, 322424845-6, 322424845-7, 322424845-8, 322424845-9, 322424845-16, 322424845-17, 322424845-18, 322424845-19, 322424845-20, 322424845-21)
 ```
 
-Ensuite, on boucle sur l'exécutable, en donnant comme argument notre nombre. Il nous suffit d'afficher le `password` du `level04`.
+Ensuite, on boucle sur l'exécutable, en donnant comme argument notre `input` calculé. Il nous suffit d'afficher le `password` du `level04`.
 
 ```
 for i in "${array[@]}"; do echo $i; (python -c "print $i"; cat -) | ./level03; done
