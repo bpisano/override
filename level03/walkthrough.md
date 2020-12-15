@@ -18,10 +18,10 @@ undefined4 main(void)
 	return 0;
 }
 ```
-
+On observe un `scanf`. Cela sigfnique que notre programme attend un `input` en entrée standart.
 Le `main` va faire un `call` à la fonction `test` avec deux arguments.
-Le premier argument est notre `input`, puis le deuxième est un nombre en dur :
-`0x1337d00d`, ce qui correspond à `322424845` en base10.
+Le premier argument est notre `input`, puis le deuxième est le nombre
+`0x1337d00d`, ce qui correspond à `322424845` en base 10.
 
 ```C
 arg_ch = arg_ch - arg_8h;
@@ -45,15 +45,15 @@ Suite à cela, un `switch` va être effectué avec les différentes valeurs ci-d
 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15
 ```
 Si le résultat de la soustraction correspond avec l'une de ces valeurs-ci, alors la fonction `decrypt` va être appelé avec `322424845` comme argument.
-Si le résultat de la soustraction ne correspond pas avec ces différentes valeurs, alors la fonction `decrypt` va être appelé, **mais** avec un nombre généré aléatoirement, comme nous l'indique le `default` dans le `switch`.
+Si le résultat de la soustraction ne correspond pas avec ces différentes valeurs, alors la fonction `decrypt` va être appelé, mais avec un nombre généré aléatoirement, comme nous l'indique le `default` dans le `switch`.
 
-Lorsque la fonction `decrypt` à comme argument `322424845`, alors, un `shell` avec les droits de `level04` sera lancé.
+Nous savons qu'en testant les 13 valeurs correpsondant au résultats de la soustraction, un de ces résulats sera le bon et la fonction `decrypt` éxécutera un `shell` avec les droits de l'utilisateur `level04`.
 
-On a donc fait un `script` `bash` qui va nous permettre de lancer le `programme` avec les différentes valeurs vu précédemment.
+Nous pouvons donc faire un `script` `bash` qui va nous permettre de lancer le `programme` avec les différentes valeurs vu précédemment.
 Premièrement, on déclare un tableau contenant le résultat de la soustraction entre `322424845` et les différentes valeurs du `switch`. 
 
 ```
-array=(322424844, 322424843, 322424842, 322424841, 322424840, 322424839, 322424838, 322424837, 322424836, 322424829, 322424828, 322424827, 322424826, 322424825, 322424824)
+array=(322424845-1, 322424845-2, 322424845-3, 322424845-4, 322424845-5, 322424845-6, 322424845-7, 322424845-8, 322424845-9, 322424845-16, 322424845-17, 322424845-18, 322424845-19, 322424845-20, 322424845-21)
 ```
 
 Ensuite, on boucle sur l'exécutable, en donnant comme argument notre nombre. Il nous suffit d'afficher le `password` du `level04`.
