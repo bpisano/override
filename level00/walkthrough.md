@@ -1,6 +1,6 @@
 # Level 0
 
-Lorsqu'on décompile le code avec `Ghidra`, on obtient un code très explicite.
+Lorsqu'on décompile le code avec `Cutter`, on obtient un code très explicite.
 
 ```C
 __isoc99_scanf(0x8048636, aiStack20);
@@ -13,11 +13,13 @@ if (aiStack20[0] != 0x149c) {
 return aiStack20[0] != 0x149c;
 ```
 
-Il s'agit d'une comparaison entre notre `input` et un nombre en dur. 
-Si notre `input` correspond aux nombres attendus, alors un `shell` sera lancé avec les droits du `level01`.
+Premièrement, on remarque qu'il y a un `scanf`. Cela signifie que le programme attend un `input` en entrée standart.
+
+On observe également qu'il y a une comparaison entre notre `input` et `0x149c`.
+Si notre `input` correspond à `0x149c`, alors un `shell` sera lancé avec les droits de l'utilisateur `level01`.
 
 `0x149c` correspond à `5276`en `base10`. 
-Il faut donc que notre `input` soit `5276` 
+Il faut donc que notre `input` soit `5276` .
 
 ```
 > ./level00
