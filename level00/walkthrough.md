@@ -13,13 +13,13 @@ if (aiStack20[0] != 0x149c) {
 return aiStack20[0] != 0x149c;
 ```
 
-Premièrement, on remarque qu'il y a un `scanf`. Cela signifie que le programme attend un `input` en entrée standart.
+Premièrement, on remarque qu'il y a un `scanf`. Cela signifie que le programme attend un `input` en entrée standard.
 
 On observe également qu'il y a une comparaison entre notre `input` et `0x149c`.
 Si notre `input` correspond à `0x149c`, alors un `shell` sera lancé avec les droits de l'utilisateur `level01`.
 
-`0x149c` correspond à `5276`en `base10`. 
-Il faut donc que notre `input` soit `5276` .
+`0x149c` correspond à `5276` en `base10`. 
+Il faut donc que notre `input` soit `5276`.
 
 ```
 > ./level00
