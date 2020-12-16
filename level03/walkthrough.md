@@ -44,7 +44,7 @@ Suite à cela, un `switch` va être effectué avec les différentes valeurs ci-d
 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15
 ```
 Si le résultat de la soustraction correspond avec l'une de ces valeurs-ci, alors la fonction `decrypt` va être appelée avec un nombre non aléatoire comme argument.
-Si le résultat de la soustraction ne correspond pas avec ces différentes valeurs, alors la fonction `decrypt` va être appelé, mais avec un nombre généré aléatoirement, comme nous l'indique le `default` dans le `switch`.
+Si le résultat de la soustraction ne correspond pas avec ces différentes valeurs, alors la fonction `decrypt` va être appelée, mais avec un nombre généré aléatoirement, comme nous l'indique le `default` dans le `switch`.
 
 Nous savons qu'en testant les 13 valeurs correpsondant au résultats de la soustraction, un de ces résulats sera le bon et la fonction `decrypt` éxécutera un `shell` avec les droits de l'utilisateur `level04`.
 
