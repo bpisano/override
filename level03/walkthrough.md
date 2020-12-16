@@ -18,10 +18,9 @@ undefined4 main(void)
 	return 0;
 }
 ```
-On observe un `scanf`. Cela sigfnique que notre programme attend un `input` en entrée standart.
+On observe un `scanf`. Cela signifie que notre programme attend un `input` en entrée standart.
 Le `main` va faire un `call` à la fonction `test` avec deux arguments.
-Le premier argument est notre `input`, puis le deuxième est le nombre
-`0x1337d00d`, ce qui correspond à `322424845` en base 10.
+Le premier argument est notre `input`, puis le deuxième est le nombre `0x1337d00d`, ce qui correspond à `322424845` en base 10.
 
 ```C
 arg_ch = arg_ch - arg_8h;
@@ -44,12 +43,12 @@ Suite à cela, un `switch` va être effectué avec les différentes valeurs ci-d
 ```
 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15
 ```
-Si le résultat de la soustraction correspond avec l'une de ces valeurs-ci, alors la fonction `decrypt` va être appelé avec `322424845` comme argument.
+Si le résultat de la soustraction correspond avec l'une de ces valeurs-ci, alors la fonction `decrypt` va être appelée avec un nombre non aléatoire comme argument.
 Si le résultat de la soustraction ne correspond pas avec ces différentes valeurs, alors la fonction `decrypt` va être appelé, mais avec un nombre généré aléatoirement, comme nous l'indique le `default` dans le `switch`.
 
 Nous savons qu'en testant les 13 valeurs correpsondant au résultats de la soustraction, un de ces résulats sera le bon et la fonction `decrypt` éxécutera un `shell` avec les droits de l'utilisateur `level04`.
 
-Nous pouvons donc faire un `script` `bash` qui va nous permettre de lancer le `programme` avec les différentes valeurs vu précédemment.
+Nous pouvons donc faire un `script` `bash` qui va nous permettre de lancer le `programme` avec les différentes valeurs vues précédemment.
 Premièrement, on déclare un tableau contenant le résultat de la soustraction entre `322424845` et les différentes valeurs du `switch`. 
 
 ```
