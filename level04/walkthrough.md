@@ -10,7 +10,7 @@ Pour rappel, l'exploit `Ret2libc` a pour but d'écraser l'adresse de retour de l
 
 Nous utiliserons `gdb` pour déterminer ces adresses. On peut, au préalable `break` au niveau du `get`. Cela nous permettra d'afficher la `stack` pour déterminer l'adresse du `buffer` ainsi que l'adresse de `eip`.
 
-> Il est important de noter que le programme effectue un `fork` au lancement. Dans `gdb`, il est impératif d'utiliser la command `set follow-fork-mode child` sans quoi il sera impossible de `break` sur une instruction.
+> Il est important de noter que le programme effectue un `fork` au lancement. Dans `gdb`, il est impératif d'utiliser la commande `set follow-fork-mode child` sans quoi il sera impossible de `break` sur une instruction.
 ```
 > gdb level04
 [...]
@@ -49,7 +49,7 @@ L'adresse de `/bin/sh` est `0xf7f897ec`.
 
 ---
 
-On peut ensuite visualiser l'adresse de notre `buffer` ainsi que celle de `eip` en entrant une entrée simple en entrée standard. Nous utiliserons ici la chaîne de caractères `AAAA`. L'adresse du début du `buffer` est située à l'adresse pointée par `esp`. C'est l'argument de la fonction `get`.
+On peut ensuite visualiser l'adresse de notre `buffer` ainsi que celle de `eip` en saisissant une entrée simple en entrée standard. Nous utiliserons ici la chaîne de caractères `AAAA`. L'adresse du début du `buffer` est située à l'adresse pointée par `esp`. C'est l'argument de la fonction `get`.
 
 ```
 AAAA
@@ -80,7 +80,7 @@ L'adresse de `eip` étant stockée à `ebp+0x04`, on peut l'afficher dans `gdb`.
 0xf7e45513 <__libc_start_main+243>:	0xe8240489
 ```
 
-L'adresse de où est stocké `eip` est `0xffffd70c`.
+L'adresse où est stocké `eip` est `0xffffd70c`.
 
 Plus globalement :
 ```
