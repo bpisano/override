@@ -11,7 +11,7 @@ if (iVar1 == 0) {
 }
 ```
 
-On remarque que la fonction `fgets` est appelée. Notre programme attend donc un argument en entrée standard. En exécutant le programme, on se rend compte que deux entrées sont attendus. 
+On remarque que la fonction `fgets` est appelée. Notre programme attend donc un argument en entrée standard. En exécutant le programme, on se rend compte que deux entrées sont attendues.
 
 Notre objectif sera donc que la fonction `auth` retourne `0`.
 Lorsque l'on observe la fonction `auth`, on remarque un appel à la fonction `ptrace`.
@@ -31,10 +31,16 @@ L'appel système **ptrace**() fournit au processus parent un moyen de contrôler
 ```
 
 `ptrace` nous empêche d'utiliser `gdb`, il va donc falloir contourner ce problème. 
-On observe que `ptrace` nous bloque dans l'utilisation de `gdb` si `eax == -1`. 
-Si on met `eax` à `0`, `ptrace` va interpréter cela comme un succès et ne va pas nous bloquer.
 
-Nous pouvons donc observer la fonction `auth` désassemblé dans `gdb`.
+```
+   0x080487b5 <+109>:	call   0x80485f0 <ptrace@plt>
+   0x080487ba <+114>:	cmp    $0xffffffff,%eax
+```
+On observe qu'après l'appel à `ptrace`, il y a une comparaison entre `eax` et un nombre, en l'occurence, c'est `-1`. La valeur de retour de `ptrace` est stocké dans `eax`.
+`ptrace` nous bloque dans l'utilisation de `gdb` si `eax == -1`. 
+Le programme va uniquement vérifier si `ptrace` retourne un `succes` ou non. De ce fait, on peut mettre `eax` à `0` pour tromper le programme en pensant qu'elle ne s'éxécute pas sous un débogueur.
+
+Nous pouvons donc observer la fonction `auth` désassemblée dans `gdb`.
 
 ```
 > (gdb) disass auth
@@ -49,14 +55,13 @@ End of assembler dump.
 
 On observe que juste avant le retour de la fonction `auth`, une instruction `cmp ` est effectuée, ce qui est donc une comparaison. Nous allons `break` ici pour observer la `stack` et voir la valeur contenue dans `ebp-0x10`.
 Nous allons devoir utiliser ces commandes dans `gdb` avant de `run` le programme afin que `ptrace` ne nous bloque pas l'accès : 
-```
-catch syscall ptrace
+
+``` 
+> (gdb) catch syscall ptrace
 commands 1
 set ($eax) = 0
 continue
 end
-```
-``` 
 > (gdb) b *0x08048866
 [...]
 > (gdb) r 
@@ -70,7 +75,7 @@ end
 ```
 Nous avons affiché l'adresse de la valeur de comparaison. 
 `0x005f216e` en base 10 équivaut à `6234478`.
-Après plusieurs essais, nous nous sommes rendus compte que cette valeur obtenue était le `serial` attendu. Nous nous sommes également rendu compte que la valeur de comparaison était propre à chaque login.
+Après plusieurs essais, nous nous sommes rendus compte que cette valeur obtenue était le `serial` attendu. Nous nous sommes également rendu compte que la valeur de comparaison était propre à chaque `login`.
 En effet, en saisissant `bpisano` comme `login`, notre serial sera différent.
 
 ```
@@ -99,7 +104,7 @@ if (iVar1 < 6) {
 return uVar2;
 ```
 
-En saisissant un `login` inférieur à 6 caractères, nous ne rentrons pas dans cette condition de comparaison.
+En saisissant un `login` inférieur à `6` caractères, nous ne rentrons pas dans cette condition de comparaison.
 
 ```
 > (gdb) r 
