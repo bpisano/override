@@ -47,7 +47,7 @@ Nous pouvons donc observer la fonction `auth` désassemblé dans `gdb`.
 End of assembler dump.
 ```
 
-On observe que juste avant le retour de la `fonction` auth, une instruction `cmp` d'effectuée, ce qui est donc une comparaison. Nous allons `break` ici pour observer la `stack` et voir la valeur contenue dans `ebp-0x10`.
+On observe que juste avant le retour de la fonction `auth`, une instruction `cmp ` est effectuée, ce qui est donc une comparaison. Nous allons `break` ici pour observer la `stack` et voir la valeur contenue dans `ebp-0x10`.
 Nous allons devoir utiliser ces commandes dans `gdb` avant de `run` le programme afin que `ptrace` ne nous bloque pas l'accès : 
 ```
 catch syscall ptrace
@@ -84,11 +84,11 @@ En effet, en saisissant `bpisano` comme `login`, notre serial sera différent.
 0xffffd678:	0x005f1ec2
 ```
 
-On remarque ici, qu'après avoir saisis `bpisano` comme `login`, la `serial` attendue est : `0x005f1ec2` soit `6233794` en base 10. La `serial` est donc différent, en fonction de chaque `login`.
+On remarque ici, qu'après avoir saisis `bpisano` comme `login`, le `serial` attendue est : `0x005f1ec2` soit `6233794` en base 10. Le `serial` est donc différent, en fonction de chaque `login`.
 
 Nous pouvons donc lancer notre programme avec par exemple `bpisano` et `6233794` comme `input`.
 
-En observant le code, nous avons remarqué qu'il y avait un `strnlen` d'effectué. `iVar1` semble être notre premier `input`, à savoir : `login`. Si `login` est inférieur à `6`, alors la valeur de retour de la fonction `auth` sera de `1`. Nous pouvons vérfier cela dans `gdb`.
+En observant le code, nous avons remarqué qu'il y avait un `strnlen` d'effectué. `iVar1` semble être notre premier `input`, à savoir : `login`. Si le `login` est inférieur à `6` caractères, alors la valeur de retour de la fonction `auth` sera de `1`. Nous pouvons vérfier cela dans `gdb`.
 
 ```C
 iVar1 = strnlen();
@@ -99,7 +99,7 @@ if (iVar1 < 6) {
 return uVar2;
 ```
 
-En saisissant un `login` inférieur à 6 caractères, nous ne rentrons pas cette condition de comparaison.
+En saisissant un `login` inférieur à 6 caractères, nous ne rentrons pas dans cette condition de comparaison.
 
 ```
 > (gdb) r 
