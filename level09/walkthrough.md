@@ -156,7 +156,7 @@ La fonction `set_msg`, elle, utilise un `strncpy` pour copier le `message` dans 
 ```c
 strncpy(arg1, &src, (int64_t)*(int32_t *)(arg1 + 0xb4), &src);
 ```
-En revanche, en observant avec le code assembleur le deuxième argument de `strncpy`, on remarque qu'il est stocké dans la `stack`.
+En revanche, en observant avec le code assembleur du deuxième argument de `strncpy`, on remarque qu'il est stocké dans la `stack`.
 ```
 > (gdb) disas set_msg
 [...]
@@ -167,7 +167,7 @@ En revanche, en observant avec le code assembleur le deuxième argument de `strn
    0x00005555555549b2 <+128>:	lea    -0x400(%rbp),%rcx
 [...]
 ```
-L'instruction à `+119` assigne `rax+0xb4` à `eax`. Cette instruction est intéressante car elle ressemble à l'opération effectuée dans le deuxième argument de `strncpy` dans le code décompilé. On peut `break` à cette instruction et afficher l'adresse de `rax+0xb4` pour confirmer son emplacement dans la stack.
+L'instruction à `+119` assigne `rax+0xb4` à `eax`. Cette instruction est intéressante car elle ressemble à l'opération effectuée dans le deuxième argument de `strncpy` dans le code décompilé. On peut `break` à cette instruction et afficher l'adresse de `rax+0xb4` pour confirmer son emplacement dans la `stack`.
 ```
 > (gdb) b *0x00005555555549a9
 Breakpoint 3 at 0x5555555549a9
@@ -214,11 +214,11 @@ Si on reprend l'affichage de notre `stack` précédent :
 0x7fffffffe5d0:	0x0000000000000000	0x00007ffff7a3d7ed
 0x7fffffffe5e0:	0x0000000000000000	0x00007fffffffe6b8
 ```
-On remarque que cet argument passé au `strncpy` pour connaitre le nombre d'octets à copier peut-être écrasé par le dernier octet de notre `username`. Nous allons utiliser ce dernier octet pour indiquer au `strncpy` le nombre d'octet à copier et ainsi écraser la valeur de `rip` avec le `message`.
+On remarque que cet argument passé à la fonction `strncpy` pour connaitre le nombre d'octets à copier peut-être écrasé par le dernier octet de notre `username`. Nous allons utiliser ce dernier octet pour indiquer à la fonction `strncpy` le nombre d'octet à copier et ainsi écraser la valeur de `rip` avec le `message`.
 
 ## Exploit
 
-Il nous faut au préalable déterminer le nombre d'octets à entrer dans le `message`.
+Il nous faut au préalable déterminer le nombre d'octets à saisir dans le `message`.
 ```
 taille_message = adresse_eip - adresse_buffer_message
                = (rbp + 0x08) - adresse_buffer_message
