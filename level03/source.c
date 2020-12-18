@@ -1,7 +1,3 @@
-
-// WARNING: Removing unreachable block (ram,0x08048698)
-// WARNING: [r2ghidra] Detected overlap for variable var_dh
-
 void decrypt(int32_t arg_8h)
 {
     char cVar1;
@@ -66,10 +62,6 @@ void decrypt(int32_t arg_8h)
     return;
 }
 
-
-
-// WARNING: [r2ghidra] Detected overlap for variable var_dh
-
 void test(int32_t arg_8h, int32_t arg_ch)
 {
     int32_t arg_8h_00;
@@ -128,10 +120,6 @@ void test(int32_t arg_8h, int32_t arg_ch)
     }
     return;
 }
-
-
-
-// WARNING: Removing unreachable block (ram,0x08048868)
 
 undefined4 main(void)
 {
