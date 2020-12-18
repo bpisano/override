@@ -152,7 +152,7 @@ Breakpoint 2, 0x000055555555492b in handle_msg ()
 ```
 Il semble donc impossible d'atteindre `rip` avec l'entrée `username`.
 
-La fonction `set_msg`, elle, utilise un `strncpy` pour copier le `message` dans la `stack`, protégeant ainsi un `overflow`.
+La fonction `set_msg`, elle, utilise un `strncpy` pour copier le `message` dans la `stack`, protégeant ainsi d'un `overflow`.
 ```c
 strncpy(arg1, &src, (int64_t)*(int32_t *)(arg1 + 0xb4), &src);
 ```
