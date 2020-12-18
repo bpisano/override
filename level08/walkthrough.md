@@ -20,13 +20,13 @@ if (iVar3 == 0) {
 }
 ```
 L'exécutable attend donc bien un argument, et va ouvrir le fichier en paramètre.
-On peut alors tenter de mettre la chemin du `password` de `level09` en argument du programme.
+On peut alors tenter de mettre le `path` du `password` de `level09` en argument du programme.
 
 ```
 > ./level08 /home/users/level09/.pass
 ERROR: Failed to open ./backups//home/users/level09/.pass
 ```
-L'exécutable nous met un message d'erreur. Nous pouvons supposer que le programme va créer un dossier `./backups`, crée une copie du fichier passé en argument puis va insérer tout cela dans le dossier `backups`. Un fichier de `log` va également être créé avec les différentes informations du `process`.  Le `chemin` indiqué est un chemin relatif, cela va nous servir pour réaliser un exploit. 
+L'exécutable nous met un message d'erreur. Nous pouvons supposer que le programme va créer une copie du fichier passé en argument puis va insérer tout cela dans le dossier `backups` suivi du `path` saisis en paramètres. Un fichier de `log` va également être créé avec les différentes informations du `process`.  Le `path` indiqué est un `path` relatif, cela va nous servir pour réaliser un exploit. 
 
 Pour vérifier notre hypothèse, nous allons créer un fichier `test` dans `/tmp` avec une phrase dedans. Puis nous allons lancer le programme avec notre fichier fraîchement créé comme argument.
 
@@ -44,8 +44,8 @@ ERROR: Failed to open ./backups//tmp/test
 super verif
 ```
 
-Nous avons donc crée notre fichier avec du texte dedans. En lançant l'exécutable, nous avons eu plusieurs erreurs, car le dossier `./backups//tmp` n'existait pas, le programme ne pouvait donc pas copier le résultat du fichier `test` dedans.
-Notre hypothèse est vérifié. Nous pouvons donc faire la même manipulation pour avec le `chemin` du `password` du `level09`.
+Nous avons donc crée notre fichier avec du texte dedans. En lançant l'exécutable, nous avons eu plusieurs erreurs, car le dossier `./backups//tmp` n'existait pas. Le programme ne pouvait donc pas copier le résultat du fichier `test` dedans.
+Notre hypothèse est vérifié. Nous pouvons donc faire la même manipulation avec le `path` du `password` du `level09`.
 
 ```
 > cd /tmp
