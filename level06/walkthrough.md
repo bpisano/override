@@ -36,9 +36,9 @@ L'appel système **ptrace**() fournit au processus parent un moyen de contrôler
    0x080487b5 <+109>:	call   0x80485f0 <ptrace@plt>
    0x080487ba <+114>:	cmp    $0xffffffff,%eax
 ```
-On observe qu'après l'appel à `ptrace`, il y a une comparaison entre `eax` et un nombre, en l'occurence, c'est `-1`. La valeur de retour de `ptrace` est stocké dans `eax`.
+On observe qu'après l'appel à `ptrace`, il y a une comparaison entre `eax` et un nombre, en l'occurence `-1`. La valeur de retour de `ptrace` est stockée dans `eax`.
 `ptrace` nous bloque dans l'utilisation de `gdb` si `eax == -1`. 
-Le programme va uniquement vérifier si `ptrace` retourne un `succes` ou non. De ce fait, on peut mettre `eax` à `0` pour tromper le programme en pensant qu'elle ne s'éxécute pas sous un débogueur.
+Le programme va uniquement vérifier si `ptrace` retourne un `succes` ou non. De ce fait, on peut mettre `eax` à `0` pour tromper le programme en pensant qu'elle ne s'éxécute pas depuis un `debugger`.
 
 Nous pouvons donc observer la fonction `auth` désassemblée dans `gdb`.
 
@@ -53,15 +53,18 @@ Nous pouvons donc observer la fonction `auth` désassemblée dans `gdb`.
 End of assembler dump.
 ```
 
-On observe que juste avant le retour de la fonction `auth`, une instruction `cmp ` est effectuée, ce qui est donc une comparaison. Nous allons `break` ici pour observer la `stack` et voir la valeur contenue dans `ebp-0x10`.
+On observe que juste avant le retour de la fonction `auth`, une instruction `cmp` est effectuée, ce qui est donc une comparaison. Nous allons `break` ici pour observer la `stack` et voir la valeur contenue dans `ebp-0x10`.
 Nous allons devoir utiliser ces commandes dans `gdb` avant de `run` le programme afin que `ptrace` ne nous bloque pas l'accès : 
 
 ``` 
 > (gdb) catch syscall ptrace
-commands 1
-set ($eax) = 0
-continue
-end
+Catchpoint 1 (syscall 'ptrace' [26])
+> (gdb) commands 1
+Type commands for breakpoint(s) 1, one per line.
+End with a line saying just "end".
+> set ($eax) = 0
+> continue
+> end
 > (gdb) b *0x08048866
 [...]
 > (gdb) r 
